@@ -28,8 +28,6 @@ namespace Bookstore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            //services.AddScoped<IBookRepository, BookRepository>();
-            //services.AddScoped<IAuthorRepository, AuthorRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<BookstoreDbContext>(options =>
             {

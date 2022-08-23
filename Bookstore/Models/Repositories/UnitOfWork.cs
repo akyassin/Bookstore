@@ -13,10 +13,10 @@ namespace Bookstore.Models.Repositories
             this.db = db;
         }
 
-        private IBookRepository bookRepository;
+        private readonly IBookRepository bookRepository;
         public IBookRepository BookRepository => bookRepository ?? new BookRepository(db);
 
-        private IAuthorRepository authorRepository;
+        private readonly IAuthorRepository authorRepository;
         public IAuthorRepository AuthorRepository => authorRepository ?? new AuthorRepository(db);
 
         public async Task<bool> Complete()
