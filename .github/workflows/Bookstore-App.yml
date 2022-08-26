@@ -6,7 +6,7 @@ on:
 env:
   AZURE_WEBAPP_NAME: Bookstore-App
   AZURE_WEBAPP_PACKAGE_PATH: Bookstore\published
-  CONFIGURATION: Release
+  CONFIGURATION: Production
   DOTNET_CORE_VERSION: 5.0.x
   WORKING_DIRECTORY: Bookstore
 jobs:
