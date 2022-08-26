@@ -12,7 +12,7 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "KeyVaultUrl": "https://bookstore-kvault.vault.azure.net/",
+        "KeyVaultUrl": "https://bookstorekv-dev.vault.azure.net/",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "AZURE_USERNAME": "cap-test-2022@outlook.com"
       }
