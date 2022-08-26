@@ -37,7 +37,7 @@ namespace Bookstore
                 string connString;
                 if (string.IsNullOrEmpty(configuration["Sql-CString"]))
                 {
-                    connString = "Server=tcp:bookstore-sql-server.database.windows.net,1433;Initial Catalog=BookStoreDb-Pro;Persist Security Info=False;User ID=BookstoreAdmin;Password=Bookstore-2022;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+                    connString = "Server=tcp:bookstore-sql-server.database.windows.net,1433;Initial Catalog=BookStoreDb-Pro;Persist Security Info=False;User ID=BookstoreAdmin;Password=Bookstore-2022;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
                 }
                 else
                 {
