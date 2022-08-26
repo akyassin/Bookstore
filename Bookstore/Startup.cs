@@ -1,3 +1,6 @@
+using Azure.Core.Pipeline;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Bookstore.Models;
 using Bookstore.Models.Repositories;
 using Bookstore.Models.Repositories.EntityRepositories;
@@ -31,7 +34,7 @@ namespace Bookstore
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<BookstoreDbContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("SqlCon"));
+                options.UseSqlServer(configuration["Sql-CString"]);
             });
         }
 
