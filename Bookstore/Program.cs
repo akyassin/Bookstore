@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Linq;
+
 
 namespace Bookstore
 {
@@ -34,8 +34,9 @@ namespace Bookstore
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, builder) =>
                 {
-                    var keyVaultEndpoint = Environment.GetEnvironmentVariable("KeyVaultUrl");
-                    builder.AddAzureKeyVault(new Uri(keyVaultEndpoint), new DefaultAzureCredential());
+                    var con = builder.Build();
+                    var keyVaultEndpoint = con.GetValue<string>("KeyVaultUrl");
+                    builder.AddAzureKeyVault(new Uri(keyVaultEndpoint), new DefaultAzureCredential(true));
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

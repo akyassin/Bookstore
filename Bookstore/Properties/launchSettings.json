@@ -12,32 +12,26 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "KeyVaultUrl": "https://bookstorekv-dev.vault.azure.net/",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "AZURE_USERNAME": "cap-test-2022@outlook.com"
+        "ASPNETCORE_ENVIRONMENT": "Prpoduction"
       }
     },
     "BookstoreDev": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
-      "environmentVariables": {
-        "KeyVaultUrl": "https://bookstorekv-dev.vault.azure.net/",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "AZURE_USERNAME": "cap-test-2022@outlook.com"
-      },
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
-      "dotnetRunMessages": "true"
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     },
     "BookstorePro": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
-      "environmentVariables": {
-        "KeyVaultUrl": "https://bookstorekv-pro.vault.azure.net/",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "AZURE_USERNAME": "cap-test-2022@outlook.com"
-      },
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
-      "dotnetRunMessages": "true"
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
     }
   }
 }
