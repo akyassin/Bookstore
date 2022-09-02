@@ -1,8 +1,7 @@
-﻿using Bookstore.Models;
-using Bookstore.Models.Repositories;
-using Bookstore.Models.Repositories.EntityRepositories;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Bookstore.Repositories.Interfaces;
+using DataAccess.Entities;
 
 namespace Bookstore.Controllers
 {

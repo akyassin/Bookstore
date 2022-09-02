@@ -1,4 +1,4 @@
-﻿@model Bookstore.ViewModels.BookAuthorViewModel
+﻿@model Bookstore.ViewModels.BookViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -35,10 +35,11 @@
             <div class="mt-2">
                 <label asp-for="File" class="control-label">Image</label>
                 <input hidden="hidden" asp-for="ImageName" class="form-control" />
-                @if (!String.IsNullOrEmpty(Model.ImageName))
+                <input hidden="hidden" asp-for="ImageUrl" class="form-control" />
+                @if (!String.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <div>
-                        <img src="~/uploads/@Model.ImageName" class="img-thumbnail" style="width:200px" />
+                        <img src="@Model.ImageUrl" class="img-thumbnail" style="width:200px" />
                         <button asp-controller="Book" asp-action="RemoveImage" asp-route-id="@Model.Id" class="btn btn-danger"><i class="bi bi-trash"></i></button>
                     </div>
                 }

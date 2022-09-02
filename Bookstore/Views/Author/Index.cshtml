@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Bookstore.Models.Author>
+﻿@model IEnumerable<DataAccess.Entities.Author>
 
 @{
     ViewData["Title"] = "Index";
@@ -19,7 +19,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
+                @Html.DisplayNameFor(model => model.AuthorId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FullName)
@@ -32,15 +32,15 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
+                    @Html.DisplayFor(modelItem => item.AuthorId)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.FullName)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-                    @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+                    @Html.ActionLink("Edit", "Edit", new { id=item.AuthorId }) |
+                    @Html.ActionLink("Details", "Details", new { id=item.AuthorId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.AuthorId })
                 </td>
             </tr>
         }

@@ -1,20 +1,13 @@
-using Azure.Core.Pipeline;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using Bookstore.Models;
-using Bookstore.Models.Repositories;
-using Bookstore.Models.Repositories.EntityRepositories;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Bookstore.Repositories.Interfaces;
+using Bookstore.Repositories.Repos;
+using DataAccess.Data;
 
 namespace Bookstore
 {
@@ -34,9 +27,12 @@ namespace Bookstore
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<BookstoreDbContext>(options =>
             {
-                var a = configuration["Sql-CString"];
                 options.UseSqlServer(configuration["Sql-CString"]);
             });
+            var a = configuration["AzureBlobCS"];
+            services.AddSingleton(x => new BlobServiceClient(configuration["AzureBlobCS"]));
+            services.AddSingleton<IBlobRepository, BlobRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

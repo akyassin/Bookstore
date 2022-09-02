@@ -1,4 +1,4 @@
-﻿@model Bookstore.Models.Author
+﻿@model DataAccess.Entities.Author
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,9 +13,9 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="mt-2">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" readonly class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
+                <label asp-for="AuthorId" class="control-label"></label>
+                <input asp-for="AuthorId" readonly class="form-control" />
+                <span asp-validation-for="AuthorId" class="text-danger"></span>
             </div>
             <div class="mt-2">
                 <label asp-for="FullName" class="control-label"></label>

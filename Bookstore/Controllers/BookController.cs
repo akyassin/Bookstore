@@ -1,5 +1,5 @@
-﻿using Bookstore.Models.Mapper;
-using Bookstore.Models.Repositories;
+﻿using Bookstore.Mapper;
+using Bookstore.Repositories.Interfaces;
 using Bookstore.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +15,8 @@ namespace Bookstore.Controllers
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IWebHostEnvironment host;
+        private readonly static string containerName = "bookstoreblob";
+
 
         public BookController(IUnitOfWork unitOfWork, IWebHostEnvironment host)
         {
@@ -40,7 +42,7 @@ namespace Bookstore.Controllers
         // GET: BookController/Create
         public async Task<ActionResult> Create()
         {
-            var model = new BookAuthorViewModel()
+            var model = new BookViewModel()
             {
                 Authors = await GetAuthorsSelect()
             };
@@ -51,15 +53,16 @@ namespace Bookstore.Controllers
         // POST: BookController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(BookAuthorViewModel model)
+        public async Task<ActionResult> Create(BookViewModel model)
         {
             try
             {
-                var fileName = TryToUploadFile(model);
+                var image = await TryToUploadFile(model);
+                model.ImageUrl = image.ImageUrl;
+                model.ImageName = image.ImageName;
 
-                var book = Mapper.MapFrom(model);
+                var book = model.MapFrom();
                 book.Author = await unitOfWork.AuthorRepository.Get(model.AuthorId);
-                book.ImageName = fileName;
 
                 unitOfWork.BookRepository.Add(book);
                 await unitOfWork.Complete();
@@ -77,7 +80,7 @@ namespace Bookstore.Controllers
         {
             var book = await unitOfWork.BookRepository.Get(id);
 
-            var model = Mapper.MapTo(book);
+            var model = book.MapTo();
             model.Authors = await GetAuthorsSelect();
 
             return View(model);
@@ -86,15 +89,16 @@ namespace Bookstore.Controllers
         // POST: BookController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(BookAuthorViewModel model)
+        public async Task<ActionResult> Edit(BookViewModel model)
         {
             try
             {
-                var fileName = TryToUploadFile(model);
+                var image = await TryToUploadFile(model);
+                model.ImageUrl = image.ImageUrl;
+                model.ImageName = image.ImageName;
 
-                var book = Mapper.MapFrom(model);
+                var book = model.MapFrom();
                 book.Author = await unitOfWork.AuthorRepository.Get(model.AuthorId);
-                book.ImageName = fileName;
 
                 unitOfWork.BookRepository.Update(book);
                 await unitOfWork.Complete();
@@ -123,10 +127,12 @@ namespace Bookstore.Controllers
         {
             try
             {
+                var bookName = (await unitOfWork.BookRepository.Get(id)).ImageName;
                 unitOfWork.BookRepository.Delete(id);
-                await unitOfWork.Complete();
+                if (await unitOfWork.Complete())
+                    RemoveBlobImage(bookName);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
             catch
             {
@@ -138,23 +144,28 @@ namespace Bookstore.Controllers
         [HttpPost]
         public async Task<ActionResult> RemoveImage(int id)
         {
-            try
+            var book = await unitOfWork.BookRepository.Get(id);
+            var isDeleted = await unitOfWork.BlobRepository.DeleteBlob(book.ImageName, containerName);
+            if (isDeleted)
             {
-                var book = await unitOfWork.BookRepository.Get(id);
-                var filenUrl = Path.Combine(host.WebRootPath, "uploads", book.ImageName);
-
-                if (!await unitOfWork.BookRepository.IConnectedToBook(book.ImageName))
-                    System.IO.File.Delete(filenUrl);
-
+                book.ImageUrl = string.Empty;
                 book.ImageName = string.Empty;
                 unitOfWork.BookRepository.Update(book);
                 await unitOfWork.Complete();
-
                 return RedirectToAction("Edit", new { id });
             }
-            catch
+            throw new Exception(message: "Image couln't delete for some reasons..");
+        }
+
+        public async void RemoveBlobImage(string imageName)
+        {
+            try
             {
-                return View();
+                await unitOfWork.BlobRepository.DeleteBlob(imageName, containerName);
+            }
+            catch (Exception)
+            {
+                throw new Exception(message: "Image couln't delete for some reasons..");
             }
         }
 
@@ -173,29 +184,43 @@ namespace Bookstore.Controllers
         private async Task<List<AuthorViewModel>> GetAuthorsSelect()
         {
             var authors = await unitOfWork.AuthorRepository.GetAll();
-            var mappedAuthors = Mapper.MapTo(authors.ToList());
+            var mappedAuthors = authors.ToList().MapTo();
 
             mappedAuthors.Insert(0, new AuthorViewModel() { Id = null, FullName = "---- Please Select an Author ----" });
             return mappedAuthors;
         }
 
-        private string TryToUploadFile(BookAuthorViewModel model)
+        private async Task<ImageViewModel> TryToUploadFile(BookViewModel model)
         {
             if (model.File != null)
             {
-                var fileUrl = Path.Combine(host.WebRootPath, "uploads", model.File.FileName);
+                var fileName = GetRandomBlobName(model.File.FileName);
+                var isUploaded = await unitOfWork.BlobRepository.UploadBlob(fileName, model.File, containerName);
 
-                using (FileStream stream = new FileStream(fileUrl, FileMode.Create))
+                if (isUploaded)
                 {
-                    model.File.CopyTo(stream);
-                    return model.File.FileName;
+                    return new ImageViewModel()
+                    {
+                        ImageName = fileName,
+                        ImageUrl = unitOfWork.BlobRepository.GetBlob(fileName, containerName)
+                    };
+                }
+                else
+                {
+                    throw new Exception(message: "Image could not upload..");
                 }
             }
-            else if (!String.IsNullOrEmpty(model.ImageName))
+            return new ImageViewModel()
             {
-                return model.ImageName;
-            }
-            return string.Empty;
+                ImageName = model.ImageName,
+                ImageUrl = model.ImageUrl
+            };
+        }
+
+        private string GetRandomBlobName(string fileName)
+        {
+            var ext = Path.GetExtension(fileName);
+            return string.Format("{0:10}_{1}_{2}{3}", DateTime.Now.Ticks, Guid.NewGuid(), fileName[..4], ext);
         }
     }
 }

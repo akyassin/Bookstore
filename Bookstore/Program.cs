@@ -1,12 +1,10 @@
-using Bookstore.Models;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Azure.Identity;
+using Bookstore.Extensions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using System;
-
 
 namespace Bookstore
 {
@@ -14,20 +12,7 @@ namespace Bookstore
     {
         public static void Main(string[] args)
         {
-            var webHost = CreateHostBuilder(args).Build();
-
-            RunMigration(webHost);
-
-            webHost.Run();
-        }
-
-        private static void RunMigration(IHost webHost)
-        {
-            using (var scope = webHost.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<BookstoreDbContext>();
-                db.Database.Migrate();
-            }
+            CreateHostBuilder(args).Build().MigrateAndTryToSeed().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
